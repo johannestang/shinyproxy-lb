@@ -1,8 +1,14 @@
 services:
-  - docker
-
+- docker
 script:
-  - docker build -t local/shinyproxy .
-  - docker create --name tempcont local/shinyproxy
-  - docker cp tempcont:/build/shinyproxy/target/shinyproxy-2.3.0.jar shinyproxy-2.3.0.jar
-  - docker rm tempcont
+- docker build -t local/shinyproxy .
+- docker create --name tempcont local/shinyproxy
+- docker cp tempcont:/build/shinyproxy/target/shinyproxy-2.3.0.jar shinyproxy-2.3.0.jar
+- docker rm tempcont
+deploy:
+  provider: releases
+  api_key:
+    secure: l26fGipIb/dXsP+Tk60GMC+vOYaUBdR5kMQKEyfdv/k/nSWRED+kbAWkUxzMFAdYoz7wgE9yF1OkmaHOCaOw9Nm1WweOdyGmo8gRoPOb8qQLViFt/ha2U10SRkqm/w16BPPWToVorog6QlB6VvO+syNmhElKiAj7t3etlqJHlF2se8z0XXblolf8brbC6IJrchjWJ3pEvz4vA630hM8aDERhPz5Oqmq6Cpar7y5q3A66qm9pZxPrIEX8jC2Ca/7w1Lbwr17zgBq4hUs6oXa80cMq274SlHMe0gRsqN7bwofOJBqhzrwQAurufJlLuSrVxjJRI75fSsyw+g6GX5fCNxTahvR3aHWcXw9EwFrGUBs17bFekgtC70mAujHLuzMFV8nOMgpw199g03TYyKaW8d4+5n5S07BiftdoWnJSfn2TbpF0aNRtqoG7XyjTKOF3kOVcJPAqN7RKyo1NmYbfE3sT4QMu3gAAzqhG/HxxP3FS8eitBhvf3OPWuPl763daMPufhuGQ8wD8QF2i1htu2HF+3m91IdhAhyBwYG8fqzqfodATyERFi3Vd7avUnwgRxjW+zdkWI/dmt0n8emseDrgoPYw+rXT6DqILCSyOMjaC4x0Niq4Ey8QlcS7gYvxsHmOsnSwdmr8lHBL6rBunXe+FCGqv+bbhNuguwNoUp48=
+  file: shinyproxy-2.3.0.jar
+  on:
+    repo: johannestang/shinyproxy-lb
