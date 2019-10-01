@@ -1,0 +1,8 @@
+services:
+  - docker
+
+script:
+  - docker build -t local/shinyproxy .
+  - docker create --name tempcont local/shinyproxy
+  - docker cp tempcont:/build/shinyproxy/target/shinyproxy-2.3.0.jar shinyproxy-2.3.0.jar
+  - docker rm tempcont
