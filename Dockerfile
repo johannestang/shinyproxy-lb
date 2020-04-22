@@ -2,9 +2,9 @@ FROM maven:3.6.1-jdk-8
 RUN apt-get update && apt-get install -y patch
 
 WORKDIR /build
-RUN git clone -n https://github.com/johannestang/containerproxy
+RUN git clone -n -b localdev https://github.com/johannestang/containerproxy
 WORKDIR /build/containerproxy
-RUN git checkout e56e5cebbffc351d0d1aecbeb5be8e1e3c27cfa7
+RUN git checkout cbec676d29306050a4d65815a933550fd1e36591
 RUN mvn -U clean install -DskipTests=true -Dlicense.skip=true
 
 WORKDIR /build

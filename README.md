@@ -1,6 +1,6 @@
-# ShinyProxy and SAML authentication
+# Patched ShinyProxy build
 
-The latest release of [ShinyProxy](https://www.shinyproxy.io) supports [SAML authentication](https://www.shinyproxy.io/configuration/#saml-20). This repository contains a patched version of ShinyProxy which addresses two issues I've come across when using SAML authentication.
+The latest release of [ShinyProxy](https://www.shinyproxy.io) supports [SAML authentication](https://www.shinyproxy.io/configuration/#saml-20). This repository contains a patched version of ShinyProxy which addresses two issues I've come across when using SAML authentication. Moreover, it is patched to support mounting PersistentVolumeClaims and Secrets on Kubernetes.
 
 ## Load balancer support
 
@@ -81,6 +81,17 @@ References:
 - [Spring Security SAML documentation on the topic](https://docs.spring.io/autorepo/docs/spring-security-saml/2.0.x/reference/htmlsingle/#time-interval)
 - [Stack Overflow post about the problem](https://stackoverflow.com/questions/30528636/idp-initiated-saml-login-error-authentication-statement-is-too-old-to-be-used)
 - [Blog post about the issue in the context of Azure AD](https://joostvdg.github.io/blogs/sso-azure-ad/)
+
+## Kubernetes volumes
+
+In ShinyProxy there is already support for making host mounts in Kubernetes using the `container-volumes` parameter (see [here](https://shinyproxy.io/configuration) for details).
+The patched version in this repository extends this to also support PersistentVolumeClaims and Secrets. In order to mount these, the mount must be specified as `"type:source:destination"`, where type is either `pvc`, `secret` or `host`. If no type is specified it is assumed to be of type `host`. As an example, if we were to mount both a PersistentVolumeClaim and a Secret, we would specify it as:
+
+```
+container-volumes: [ "pvc:my-volume:/mnt/volume", "secret:my-secret:/mnt/secret" ]
+```
+
+For more information see [this pull request](https://github.com/openanalytics/containerproxy/pull/29).
 
 ## Using ShinyProxy from this repository
 
