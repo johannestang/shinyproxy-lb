@@ -1,6 +1,11 @@
 # Patched ShinyProxy build
 
-The latest release of [ShinyProxy](https://www.shinyproxy.io) supports [SAML authentication](https://www.shinyproxy.io/configuration/#saml-20). This repository contains a patched version of ShinyProxy which addresses two issues I've come across when using SAML authentication. Moreover, it is patched to support mounting PersistentVolumeClaims and Secrets on Kubernetes.
+This repository contains a patched version of [ShinyProxy](https://www.shinyproxy.io) which addresses a number of problems I've come across:
+
+- Load balancer support when using SAML authentication.
+- Support for specifying max SAML token age.
+- Support for mounting PersistentVolumeClaims, Secrets and ConfigMaps on Kubernetes.
+- Support for adding a label with the spec id to Pods deployed on Kubernetes.
 
 ## Load balancer support
 
@@ -36,6 +41,8 @@ proxy:
     roles-attribute: http://schemas.microsoft.com/ws/2008/06/identity/claims/role
 ```
 
+For more information see [this pull request](https://github.com/openanalytics/containerproxy/pull/32).
+
 References:
 
 - [Spring Security SAML documentation on the topic](https://docs.spring.io/spring-security-saml/docs/2.0.x/reference/html/configuration-advanced.html#configuration-load-balancing)
@@ -44,7 +51,7 @@ References:
 
 ## Authentication token expiration
 
-The other issue showed up as follows in the log:
+The problem of expired authentication tokens shows in the log as:
 
 ```
 2020-02-25 11:11:56.649  INFO 1 --- [  XNIO-2 task-6] o.s.security.saml.log.SAMLDefaultLogger  : AuthNResponse;FAILURE;10.0.0.1;api://xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx;https://sts.windows.net/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/;;;org.opensaml.common.SAMLException: Response doesn't have any valid assertion which would pass subject validation
@@ -76,6 +83,8 @@ proxy:
     max-auth-age: 86400
 ```
 
+For more information see [this pull request](https://github.com/openanalytics/containerproxy/pull/32).
+
 References:
 
 - [Spring Security SAML documentation on the topic](https://docs.spring.io/autorepo/docs/spring-security-saml/2.0.x/reference/htmlsingle/#time-interval)
@@ -85,13 +94,32 @@ References:
 ## Kubernetes volumes
 
 In ShinyProxy there is already support for making host mounts in Kubernetes using the `container-volumes` parameter (see [here](https://shinyproxy.io/configuration) for details).
-The patched version in this repository extends this to also support PersistentVolumeClaims and Secrets. In order to mount these, the mount must be specified as `"type:source:destination"`, where type is either `pvc`, `secret` or `host`. If no type is specified it is assumed to be of type `host`. As an example, if we were to mount both a PersistentVolumeClaim and a Secret, we would specify it as:
+The patched version in this repository extends this to also support PersistentVolumeClaims, Secrets and ConfigMaps. In order to mount these, the mount must be specified as `"type:source:destination"`, where type is either `pvc`, `secret`, `configmap` or `host`. If no type is specified it is assumed to be of type `host`. As an example, if we were to mount both a PersistentVolumeClaim and a Secret, we would specify it as:
 
 ```
 container-volumes: [ "pvc:my-volume:/mnt/volume", "secret:my-secret:/mnt/secret" ]
 ```
 
 For more information see [this pull request](https://github.com/openanalytics/containerproxy/pull/29).
+
+## Labelling Pods
+
+When deploying multiple Shiny apps to a Kubernetes cluster the Pods running the apps are given generic names. This makes it cumbersome to figure out which app is running in a given Pod. For example, running `kubectl get all` would
+tell us we have the following Pod:
+
+```
+NAME                                                              READY   STATUS    RESTARTS   AGE
+pod/sp-pod-94aa06a8-f94e-4204-a476-832b7d26d1dd                   1/1     Running   0          24s
+```
+
+The patched version of ShinyProxy in this repository labels the Pods with the spec id of the Shiny application. The label is called `sp-spec-id`, so if Shinyproxy has been configured with an app that has the id `shinytest` then `kubectl get all --show-labels` would return:
+
+```
+NAME                                                              READY   STATUS    RESTARTS   AGE   LABELS
+pod/sp-pod-94aa06a8-f94e-4204-a476-832b7d26d1dd                   1/1     Running   0          81s   app=94aa06a8-f94e-4204-a476-832b7d26d1dd,sp-spec-id=shinytest
+```
+
+For more information see [this pull request](https://github.com/openanalytics/containerproxy/pull/35).
 
 ## Using ShinyProxy from this repository
 

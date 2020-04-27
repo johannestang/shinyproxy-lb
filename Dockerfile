@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y patch
 WORKDIR /build
 RUN git clone -n -b localdev https://github.com/johannestang/containerproxy
 WORKDIR /build/containerproxy
-RUN git checkout cbec676d29306050a4d65815a933550fd1e36591
+RUN git checkout 87f2d9d53e60c967ed1c2115639f8ba2a6986bfa
 RUN mvn -U clean install -DskipTests=true -Dlicense.skip=true
 
 WORKDIR /build
