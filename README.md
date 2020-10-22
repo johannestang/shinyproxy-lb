@@ -4,8 +4,10 @@ This repository contains a patched version of [ShinyProxy](https://www.shinyprox
 
 - Load balancer support when using SAML authentication.
 - Support for specifying max SAML token age.
-- Support for mounting PersistentVolumeClaims, Secrets and ConfigMaps on Kubernetes.
 - Support for adding a label with the spec id to Pods deployed on Kubernetes.
+
+This repository previously also added support for mounting PersistentVolumeClaims, Secrets and ConfigMaps on Kubernetes. As of ShinyProxy 2.4.0 this is now supported using `kubernetes-pod-patches`, see
+[here](https://shinyproxy.io/documentation/configuration/#apps) for details. The 2.3.0 release in this repository still contains the original patch.
 
 ## Load balancer support
 
@@ -91,17 +93,6 @@ References:
 - [Stack Overflow post about the problem](https://stackoverflow.com/questions/30528636/idp-initiated-saml-login-error-authentication-statement-is-too-old-to-be-used)
 - [Blog post about the issue in the context of Azure AD](https://joostvdg.github.io/blogs/sso-azure-ad/)
 
-## Kubernetes volumes
-
-In ShinyProxy there is already support for making host mounts in Kubernetes using the `container-volumes` parameter (see [here](https://shinyproxy.io/configuration) for details).
-The patched version in this repository extends this to also support PersistentVolumeClaims, Secrets and ConfigMaps. In order to mount these, the mount must be specified as `"type:source:destination"`, where type is either `pvc`, `secret`, `configmap` or `host`. If no type is specified it is assumed to be of type `host`. As an example, if we were to mount both a PersistentVolumeClaim and a Secret, we would specify it as:
-
-```
-container-volumes: [ "pvc:my-volume:/mnt/volume", "secret:my-secret:/mnt/secret" ]
-```
-
-For more information see [this pull request](https://github.com/openanalytics/containerproxy/pull/29).
-
 ## Labelling Pods
 
 When deploying multiple Shiny apps to a Kubernetes cluster the Pods running the apps are given generic names. This makes it cumbersome to figure out which app is running in a given Pod. For example, running `kubectl get all` would
@@ -123,4 +114,4 @@ For more information see [this pull request](https://github.com/openanalytics/co
 
 ## Using ShinyProxy from this repository
 
-A drop-in replacement for the normal ShinyProxy jar is provided [here](https://github.com/johannestang/shinyproxy-lb/releases/download/v2.3.0/shinyproxy-2.3.0.jar). This repository is only used to build the ShinyProxy jar. The actual code is in [my local fork](https://github.com/johannestang/containerproxy) of the [containerproxy repo](https://github.com/openanalytics/containerproxy).
+A drop-in replacement for the normal ShinyProxy jar is provided [here](https://github.com/johannestang/shinyproxy-lb/releases/download/v2.4.1/shinyproxy-2.4.1.jar). This repository is only used to build the ShinyProxy jar. The actual code is in [my local fork](https://github.com/johannestang/containerproxy) of the [containerproxy repo](https://github.com/openanalytics/containerproxy).
