@@ -1,5 +1,7 @@
 # Patched ShinyProxy build
 
+## NOTE: As of ShinyProxy 2.5.0 the patches below are no longer needed as the changes have been incorporated upstream.
+
 This repository contains a patched version of [ShinyProxy](https://www.shinyproxy.io) which addresses a number of problems I've come across:
 
 - Load balancer support when using SAML authentication.
